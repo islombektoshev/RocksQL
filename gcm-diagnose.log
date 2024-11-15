@@ -1,0 +1,145 @@
+﻿Diagnose log at 2024-11-15T06:52:23Z
+
+AppPath: /usr/local/share/gcm-core/git-credential-manager
+InstallDir: /usr/local/share/gcm-core/
+Version: 2.6.0+3c28096588f549cb46f36b552390514356830abe
+
+------------
+Diagnostic: Environment
+Skipped: False
+Success: True
+Exception: None
+Log:
+OSType: macOS
+OSVersion: 14.2.0
+Reading environment variables... OK
+ Variables:
+SHELL=/bin/zsh
+USER=streamer
+SUDO_UID=501
+LC_TERMINAL=iTerm2
+SUDO_USER=islombek
+COLORTERM=truecolor
+OLDPWD=/Users/islombek
+__CF_USER_TEXT_ENCODING=0x1F6:0x0:0x0
+SSH_AUTH_SOCK=/private/tmp/com.apple.launchd.LmqAPM8Ga9/Listeners
+HOME=/Users/streamer
+SUDO_COMMAND=/usr/bin/su streamer
+_=/usr/local/share/gcm-core/git-credential-manager
+GIT_TRACE2_PARENT_SID=8147a278-9654-42f7-9e70-94b74bd4d678
+LOGNAME=root
+PATH=/opt/homebrew/Caskroom/redis-stack-server/7.2.0-v11/bin:/Users/islombek/.local/bin:/usr/local/go/bin/:/opt/homebrew/opt/binutils/bin:/Users/islombek/.sdkman/candidates/maven/current/bin:/Users/islombek/.sdkman/candidates/jmc/current/bin:/Users/islombek/.sdkman/candidates/java/current/bin:/Users/islombek/.sdkman/candidates/ant/current/bin:/Library/Frameworks/Python.framework/Versions/3.12/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/TeX/texbin:/Applications/Wireshark.app/Contents/MacOS:/usr/local/go/bin:/Users/islombek/.cargo/bin:/Applications/iTerm.app/Contents/Resources/utilities:/Users/islombek/Library/Application Support/JetBrains/Toolbox/scripts:/opt/homebrew/bin
+LC_TERMINAL_VERSION=3.5.5
+SUDO_GID=20
+TERM=xterm-256color
+LESS=-R
+PWD=/Users/streamer/Projects/go/RocksQL
+LANG=en_AU.UTF-8
+PAGER=less
+LSCOLORS=Gxfxcxdxbxegedabagacad
+ZSH=/Users/streamer/.oh-my-zsh
+MAIL=/var/mail/root
+COLORFGBG=15;0
+LS_COLORS=di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43
+SHLVL=1
+
+
+------------
+Diagnostic: File system
+Skipped: False
+Success: True
+Exception: None
+Log:
+Temporary directory is '/tmp/'...
+Checking basic file I/O...
+Writing to temporary file '/tmp/b23d4e50902af4426f133f7c'... OK
+Reading from temporary file '/tmp/b23d4e50902af4426f133f7c'... OK
+Deleting temporary file '/tmp/b23d4e50902af4426f133f7c'... OK
+Testing IFileSystem instance...
+UserHomePath: /Users/streamer
+UserDataDirectoryPath: /Users/streamer/.gcm
+GetCurrentDirectory(): /Users/streamer/Projects/go/RocksQL
+
+------------
+Diagnostic: Networking
+Skipped: False
+Success: True
+Exception: None
+Log:
+Checking networking and HTTP stack...
+Creating HTTP client... OK
+IsNetworkAvailable: True
+Sending HEAD request to http://example.com...Sending HEAD request to https://example.com... OK
+ OK
+Acquiring free TCP port... OK
+Testing local HTTP loopback connections...
+Creating new HTTP listener for http://localhost:62087/... OK
+Waiting for loopback connection... OK
+Writing response... OK
+Waiting for response data... OK
+Loopback connection data OK
+
+------------
+Diagnostic: Git
+Skipped: False
+Success: True
+Exception: None
+Log:
+Getting Git version... OK
+Git version is '2.39.3 (Apple Git-145)'
+Locating current repository...Git repository at '/Users/streamer/Projects/go/RocksQL/.git'
+ OK
+Listing all Git configuration... OK
+Git configuration:
+file:/Library/Developer/CommandLineTools/usr/share/git-core/gitconfig	credential.helper=osxkeychain
+file:/Library/Developer/CommandLineTools/usr/share/git-core/gitconfig	init.defaultbranch=main
+file:/Users/streamer/.gitconfig	credential.helper=
+file:/Users/streamer/.gitconfig	credential.helper=/usr/local/share/gcm-core/git-credential-manager
+file:/Users/streamer/.gitconfig	credential.https://dev.azure.com.usehttppath=true
+file:.git/config	core.repositoryformatversion=0
+file:.git/config	core.filemode=true
+file:.git/config	core.bare=false
+file:.git/config	core.logallrefupdates=true
+file:.git/config	core.ignorecase=true
+file:.git/config	core.precomposeunicode=true
+file:.git/config	remote.origin.url=https://github.com/islombektoshev/RocksQL.git
+file:.git/config	remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+
+
+------------
+Diagnostic: Credential storage
+Skipped: False
+Success: True
+Exception: None
+Log:
+ICredentialStore instance is of type: CredentialStore
+Writing test credential... OK
+Reading test credential... OK
+Deleting test credential... OK
+
+------------
+Diagnostic: Microsoft authentication (AAD/MSA)
+Skipped: False
+Success: True
+Exception: None
+Log:
+Broker is not enabled.
+Flow type is: Auto
+Gathering MSAL token cache data... OK
+CacheDirectory: /Users/streamer/.local/.IdentityService
+CacheFileName: msal.cache
+CacheFilePath: /Users/streamer/.local/.IdentityService/msal.cache
+MacKeyChainAccountName: MSALCache
+MacKeyChainServiceName: Microsoft.Developer.IdentityService
+Creating cache helper... OK
+Verifying MSAL token cache persistence... OK
+
+------------
+Diagnostic: GitHub API
+Skipped: False
+Success: True
+Exception: None
+Log:
+Using 'https://github.com/' as API target.
+Querying '/meta' endpoint... OK
+

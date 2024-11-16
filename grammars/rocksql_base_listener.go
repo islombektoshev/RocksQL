@@ -50,23 +50,11 @@ func (s *BaseRocksQLListener) EnterDeleteOperation(ctx *DeleteOperationContext) 
 // ExitDeleteOperation is called when production deleteOperation is exited.
 func (s *BaseRocksQLListener) ExitDeleteOperation(ctx *DeleteOperationContext) {}
 
-// EnterBatchOperation is called when production batchOperation is entered.
-func (s *BaseRocksQLListener) EnterBatchOperation(ctx *BatchOperationContext) {}
-
-// ExitBatchOperation is called when production batchOperation is exited.
-func (s *BaseRocksQLListener) ExitBatchOperation(ctx *BatchOperationContext) {}
-
 // EnterBatchEntry is called when production batchEntry is entered.
 func (s *BaseRocksQLListener) EnterBatchEntry(ctx *BatchEntryContext) {}
 
 // ExitBatchEntry is called when production batchEntry is exited.
 func (s *BaseRocksQLListener) ExitBatchEntry(ctx *BatchEntryContext) {}
-
-// EnterSnapshotOperation is called when production snapshotOperation is entered.
-func (s *BaseRocksQLListener) EnterSnapshotOperation(ctx *SnapshotOperationContext) {}
-
-// ExitSnapshotOperation is called when production snapshotOperation is exited.
-func (s *BaseRocksQLListener) ExitSnapshotOperation(ctx *SnapshotOperationContext) {}
 
 // EnterAdminCommand is called when production adminCommand is entered.
 func (s *BaseRocksQLListener) EnterAdminCommand(ctx *AdminCommandContext) {}

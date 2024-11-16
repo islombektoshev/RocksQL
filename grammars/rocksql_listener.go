@@ -22,14 +22,8 @@ type RocksQLListener interface {
 	// EnterDeleteOperation is called when entering the deleteOperation production.
 	EnterDeleteOperation(c *DeleteOperationContext)
 
-	// EnterBatchOperation is called when entering the batchOperation production.
-	EnterBatchOperation(c *BatchOperationContext)
-
 	// EnterBatchEntry is called when entering the batchEntry production.
 	EnterBatchEntry(c *BatchEntryContext)
-
-	// EnterSnapshotOperation is called when entering the snapshotOperation production.
-	EnterSnapshotOperation(c *SnapshotOperationContext)
 
 	// EnterAdminCommand is called when entering the adminCommand production.
 	EnterAdminCommand(c *AdminCommandContext)
@@ -64,14 +58,8 @@ type RocksQLListener interface {
 	// ExitDeleteOperation is called when exiting the deleteOperation production.
 	ExitDeleteOperation(c *DeleteOperationContext)
 
-	// ExitBatchOperation is called when exiting the batchOperation production.
-	ExitBatchOperation(c *BatchOperationContext)
-
 	// ExitBatchEntry is called when exiting the batchEntry production.
 	ExitBatchEntry(c *BatchEntryContext)
-
-	// ExitSnapshotOperation is called when exiting the snapshotOperation production.
-	ExitSnapshotOperation(c *SnapshotOperationContext)
 
 	// ExitAdminCommand is called when exiting the adminCommand production.
 	ExitAdminCommand(c *AdminCommandContext)

@@ -32,54 +32,45 @@ var RocksQLParserStaticData struct {
 func rocksqlParserInit() {
 	staticData := &RocksQLParserStaticData
 	staticData.LiteralNames = []string{
-		"", "'PUT'", "'GET'", "'DEL'", "'BATCH'", "'{'", "'}'", "'SNAPSHOT'",
-		"'CREATE'", "'DELETE'", "'ADMIN'", "'COMPACT'", "'STATS'", "'CONFIG'",
+		"", "'PUT'", "'GET'", "'DEL'", "'ADMIN'", "'COMPACT'", "'STATS'", "'CONFIG'",
 		"'SET'",
 	}
 	staticData.SymbolicNames = []string{
-		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "STRING",
-		"NUMBER", "IDENTIFIER", "WS", "COMMENT",
+		"", "", "", "", "", "", "", "", "", "STRING", "NUMBER", "IDENTIFIER",
+		"WS", "COMMENT",
 	}
 	staticData.RuleNames = []string{
 		"command", "operation", "putOperation", "getOperation", "deleteOperation",
-		"batchOperation", "batchEntry", "snapshotOperation", "adminCommand",
-		"configCommand", "key", "value", "identifier", "option",
+		"batchEntry", "adminCommand", "configCommand", "key", "value", "identifier",
+		"option",
 	}
 	staticData.PredictionContextCache = antlr.NewPredictionContextCache()
 	staticData.serializedATN = []int32{
-		4, 1, 19, 86, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
+		4, 1, 13, 67, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
 		4, 2, 5, 7, 5, 2, 6, 7, 6, 2, 7, 7, 7, 2, 8, 7, 8, 2, 9, 7, 9, 2, 10, 7,
-		10, 2, 11, 7, 11, 2, 12, 7, 12, 2, 13, 7, 13, 1, 0, 1, 0, 1, 0, 1, 1, 1,
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 38, 8, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 3,
-		1, 3, 1, 3, 1, 4, 1, 4, 1, 4, 1, 5, 1, 5, 1, 5, 4, 5, 53, 8, 5, 11, 5,
-		12, 5, 54, 1, 5, 1, 5, 1, 6, 1, 6, 3, 6, 61, 8, 6, 1, 7, 1, 7, 1, 7, 1,
-		7, 1, 8, 1, 8, 1, 8, 1, 8, 3, 8, 71, 8, 8, 1, 9, 1, 9, 1, 9, 1, 9, 1, 9,
-		1, 10, 1, 10, 1, 11, 1, 11, 1, 12, 1, 12, 1, 13, 1, 13, 1, 13, 0, 0, 14,
-		0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 0, 3, 1, 0, 8, 9, 2,
-		0, 15, 15, 17, 17, 1, 0, 15, 16, 80, 0, 28, 1, 0, 0, 0, 2, 37, 1, 0, 0,
-		0, 4, 39, 1, 0, 0, 0, 6, 43, 1, 0, 0, 0, 8, 46, 1, 0, 0, 0, 10, 49, 1,
-		0, 0, 0, 12, 60, 1, 0, 0, 0, 14, 62, 1, 0, 0, 0, 16, 66, 1, 0, 0, 0, 18,
-		72, 1, 0, 0, 0, 20, 77, 1, 0, 0, 0, 22, 79, 1, 0, 0, 0, 24, 81, 1, 0, 0,
-		0, 26, 83, 1, 0, 0, 0, 28, 29, 3, 2, 1, 0, 29, 30, 5, 0, 0, 1, 30, 1, 1,
-		0, 0, 0, 31, 38, 3, 4, 2, 0, 32, 38, 3, 6, 3, 0, 33, 38, 3, 8, 4, 0, 34,
-		38, 3, 10, 5, 0, 35, 38, 3, 14, 7, 0, 36, 38, 3, 16, 8, 0, 37, 31, 1, 0,
-		0, 0, 37, 32, 1, 0, 0, 0, 37, 33, 1, 0, 0, 0, 37, 34, 1, 0, 0, 0, 37, 35,
-		1, 0, 0, 0, 37, 36, 1, 0, 0, 0, 38, 3, 1, 0, 0, 0, 39, 40, 5, 1, 0, 0,
-		40, 41, 3, 20, 10, 0, 41, 42, 3, 22, 11, 0, 42, 5, 1, 0, 0, 0, 43, 44,
-		5, 2, 0, 0, 44, 45, 3, 20, 10, 0, 45, 7, 1, 0, 0, 0, 46, 47, 5, 3, 0, 0,
-		47, 48, 3, 20, 10, 0, 48, 9, 1, 0, 0, 0, 49, 50, 5, 4, 0, 0, 50, 52, 5,
-		5, 0, 0, 51, 53, 3, 12, 6, 0, 52, 51, 1, 0, 0, 0, 53, 54, 1, 0, 0, 0, 54,
-		52, 1, 0, 0, 0, 54, 55, 1, 0, 0, 0, 55, 56, 1, 0, 0, 0, 56, 57, 5, 6, 0,
-		0, 57, 11, 1, 0, 0, 0, 58, 61, 3, 4, 2, 0, 59, 61, 3, 8, 4, 0, 60, 58,
-		1, 0, 0, 0, 60, 59, 1, 0, 0, 0, 61, 13, 1, 0, 0, 0, 62, 63, 5, 7, 0, 0,
-		63, 64, 7, 0, 0, 0, 64, 65, 3, 24, 12, 0, 65, 15, 1, 0, 0, 0, 66, 70, 5,
-		10, 0, 0, 67, 71, 5, 11, 0, 0, 68, 71, 5, 12, 0, 0, 69, 71, 3, 18, 9, 0,
-		70, 67, 1, 0, 0, 0, 70, 68, 1, 0, 0, 0, 70, 69, 1, 0, 0, 0, 71, 17, 1,
-		0, 0, 0, 72, 73, 5, 13, 0, 0, 73, 74, 5, 14, 0, 0, 74, 75, 3, 26, 13, 0,
-		75, 76, 3, 22, 11, 0, 76, 19, 1, 0, 0, 0, 77, 78, 7, 1, 0, 0, 78, 21, 1,
-		0, 0, 0, 79, 80, 7, 2, 0, 0, 80, 23, 1, 0, 0, 0, 81, 82, 5, 17, 0, 0, 82,
-		25, 1, 0, 0, 0, 83, 84, 5, 17, 0, 0, 84, 27, 1, 0, 0, 0, 4, 37, 54, 60,
-		70,
+		10, 2, 11, 7, 11, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 32, 8,
+		1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 3, 1, 3, 1, 3, 1, 4, 1, 4, 1, 4, 1, 5, 1,
+		5, 3, 5, 46, 8, 5, 1, 6, 1, 6, 1, 6, 1, 6, 3, 6, 52, 8, 6, 1, 7, 1, 7,
+		1, 7, 1, 7, 1, 7, 1, 8, 1, 8, 1, 9, 1, 9, 1, 10, 1, 10, 1, 11, 1, 11, 1,
+		11, 0, 0, 12, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 0, 2, 2, 0, 9,
+		9, 11, 11, 1, 0, 9, 10, 60, 0, 24, 1, 0, 0, 0, 2, 31, 1, 0, 0, 0, 4, 33,
+		1, 0, 0, 0, 6, 37, 1, 0, 0, 0, 8, 40, 1, 0, 0, 0, 10, 45, 1, 0, 0, 0, 12,
+		47, 1, 0, 0, 0, 14, 53, 1, 0, 0, 0, 16, 58, 1, 0, 0, 0, 18, 60, 1, 0, 0,
+		0, 20, 62, 1, 0, 0, 0, 22, 64, 1, 0, 0, 0, 24, 25, 3, 2, 1, 0, 25, 26,
+		5, 0, 0, 1, 26, 1, 1, 0, 0, 0, 27, 32, 3, 4, 2, 0, 28, 32, 3, 6, 3, 0,
+		29, 32, 3, 8, 4, 0, 30, 32, 3, 12, 6, 0, 31, 27, 1, 0, 0, 0, 31, 28, 1,
+		0, 0, 0, 31, 29, 1, 0, 0, 0, 31, 30, 1, 0, 0, 0, 32, 3, 1, 0, 0, 0, 33,
+		34, 5, 1, 0, 0, 34, 35, 3, 16, 8, 0, 35, 36, 3, 18, 9, 0, 36, 5, 1, 0,
+		0, 0, 37, 38, 5, 2, 0, 0, 38, 39, 3, 16, 8, 0, 39, 7, 1, 0, 0, 0, 40, 41,
+		5, 3, 0, 0, 41, 42, 3, 16, 8, 0, 42, 9, 1, 0, 0, 0, 43, 46, 3, 4, 2, 0,
+		44, 46, 3, 8, 4, 0, 45, 43, 1, 0, 0, 0, 45, 44, 1, 0, 0, 0, 46, 11, 1,
+		0, 0, 0, 47, 51, 5, 4, 0, 0, 48, 52, 5, 5, 0, 0, 49, 52, 5, 6, 0, 0, 50,
+		52, 3, 14, 7, 0, 51, 48, 1, 0, 0, 0, 51, 49, 1, 0, 0, 0, 51, 50, 1, 0,
+		0, 0, 52, 13, 1, 0, 0, 0, 53, 54, 5, 7, 0, 0, 54, 55, 5, 8, 0, 0, 55, 56,
+		3, 22, 11, 0, 56, 57, 3, 18, 9, 0, 57, 15, 1, 0, 0, 0, 58, 59, 7, 0, 0,
+		0, 59, 17, 1, 0, 0, 0, 60, 61, 7, 1, 0, 0, 61, 19, 1, 0, 0, 0, 62, 63,
+		5, 11, 0, 0, 63, 21, 1, 0, 0, 0, 64, 65, 5, 11, 0, 0, 65, 23, 1, 0, 0,
+		0, 3, 31, 45, 51,
 	}
 	deserializer := antlr.NewATNDeserializer(nil)
 	staticData.atn = deserializer.Deserialize(staticData.serializedATN)
@@ -126,35 +117,27 @@ const (
 	RocksQLParserT__5       = 6
 	RocksQLParserT__6       = 7
 	RocksQLParserT__7       = 8
-	RocksQLParserT__8       = 9
-	RocksQLParserT__9       = 10
-	RocksQLParserT__10      = 11
-	RocksQLParserT__11      = 12
-	RocksQLParserT__12      = 13
-	RocksQLParserT__13      = 14
-	RocksQLParserSTRING     = 15
-	RocksQLParserNUMBER     = 16
-	RocksQLParserIDENTIFIER = 17
-	RocksQLParserWS         = 18
-	RocksQLParserCOMMENT    = 19
+	RocksQLParserSTRING     = 9
+	RocksQLParserNUMBER     = 10
+	RocksQLParserIDENTIFIER = 11
+	RocksQLParserWS         = 12
+	RocksQLParserCOMMENT    = 13
 )
 
 // RocksQLParser rules.
 const (
-	RocksQLParserRULE_command           = 0
-	RocksQLParserRULE_operation         = 1
-	RocksQLParserRULE_putOperation      = 2
-	RocksQLParserRULE_getOperation      = 3
-	RocksQLParserRULE_deleteOperation   = 4
-	RocksQLParserRULE_batchOperation    = 5
-	RocksQLParserRULE_batchEntry        = 6
-	RocksQLParserRULE_snapshotOperation = 7
-	RocksQLParserRULE_adminCommand      = 8
-	RocksQLParserRULE_configCommand     = 9
-	RocksQLParserRULE_key               = 10
-	RocksQLParserRULE_value             = 11
-	RocksQLParserRULE_identifier        = 12
-	RocksQLParserRULE_option            = 13
+	RocksQLParserRULE_command         = 0
+	RocksQLParserRULE_operation       = 1
+	RocksQLParserRULE_putOperation    = 2
+	RocksQLParserRULE_getOperation    = 3
+	RocksQLParserRULE_deleteOperation = 4
+	RocksQLParserRULE_batchEntry      = 5
+	RocksQLParserRULE_adminCommand    = 6
+	RocksQLParserRULE_configCommand   = 7
+	RocksQLParserRULE_key             = 8
+	RocksQLParserRULE_value           = 9
+	RocksQLParserRULE_identifier      = 10
+	RocksQLParserRULE_option          = 11
 )
 
 // ICommandContext is an interface to support dynamic dispatch.
@@ -249,11 +232,11 @@ func (p *RocksQLParser) Command() (localctx ICommandContext) {
 	p.EnterRule(localctx, 0, RocksQLParserRULE_command)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(28)
+		p.SetState(24)
 		p.Operation()
 	}
 	{
-		p.SetState(29)
+		p.SetState(25)
 		p.Match(RocksQLParserEOF)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -285,8 +268,6 @@ type IOperationContext interface {
 	PutOperation() IPutOperationContext
 	GetOperation() IGetOperationContext
 	DeleteOperation() IDeleteOperationContext
-	BatchOperation() IBatchOperationContext
-	SnapshotOperation() ISnapshotOperationContext
 	AdminCommand() IAdminCommandContext
 
 	// IsOperationContext differentiates from other interfaces.
@@ -373,38 +354,6 @@ func (s *OperationContext) DeleteOperation() IDeleteOperationContext {
 	return t.(IDeleteOperationContext)
 }
 
-func (s *OperationContext) BatchOperation() IBatchOperationContext {
-	var t antlr.RuleContext
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IBatchOperationContext); ok {
-			t = ctx.(antlr.RuleContext)
-			break
-		}
-	}
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(IBatchOperationContext)
-}
-
-func (s *OperationContext) SnapshotOperation() ISnapshotOperationContext {
-	var t antlr.RuleContext
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(ISnapshotOperationContext); ok {
-			t = ctx.(antlr.RuleContext)
-			break
-		}
-	}
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(ISnapshotOperationContext)
-}
-
 func (s *OperationContext) AdminCommand() IAdminCommandContext {
 	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
@@ -444,7 +393,7 @@ func (s *OperationContext) ExitRule(listener antlr.ParseTreeListener) {
 func (p *RocksQLParser) Operation() (localctx IOperationContext) {
 	localctx = NewOperationContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 2, RocksQLParserRULE_operation)
-	p.SetState(37)
+	p.SetState(31)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -454,42 +403,28 @@ func (p *RocksQLParser) Operation() (localctx IOperationContext) {
 	case RocksQLParserT__0:
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(31)
+			p.SetState(27)
 			p.PutOperation()
 		}
 
 	case RocksQLParserT__1:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(32)
+			p.SetState(28)
 			p.GetOperation()
 		}
 
 	case RocksQLParserT__2:
 		p.EnterOuterAlt(localctx, 3)
 		{
-			p.SetState(33)
+			p.SetState(29)
 			p.DeleteOperation()
 		}
 
 	case RocksQLParserT__3:
 		p.EnterOuterAlt(localctx, 4)
 		{
-			p.SetState(34)
-			p.BatchOperation()
-		}
-
-	case RocksQLParserT__6:
-		p.EnterOuterAlt(localctx, 5)
-		{
-			p.SetState(35)
-			p.SnapshotOperation()
-		}
-
-	case RocksQLParserT__9:
-		p.EnterOuterAlt(localctx, 6)
-		{
-			p.SetState(36)
+			p.SetState(30)
 			p.AdminCommand()
 		}
 
@@ -615,7 +550,7 @@ func (p *RocksQLParser) PutOperation() (localctx IPutOperationContext) {
 	p.EnterRule(localctx, 4, RocksQLParserRULE_putOperation)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(39)
+		p.SetState(33)
 		p.Match(RocksQLParserT__0)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -623,11 +558,11 @@ func (p *RocksQLParser) PutOperation() (localctx IPutOperationContext) {
 		}
 	}
 	{
-		p.SetState(40)
+		p.SetState(34)
 		p.Key()
 	}
 	{
-		p.SetState(41)
+		p.SetState(35)
 		p.Value()
 	}
 
@@ -731,7 +666,7 @@ func (p *RocksQLParser) GetOperation() (localctx IGetOperationContext) {
 	p.EnterRule(localctx, 6, RocksQLParserRULE_getOperation)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(43)
+		p.SetState(37)
 		p.Match(RocksQLParserT__1)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -739,7 +674,7 @@ func (p *RocksQLParser) GetOperation() (localctx IGetOperationContext) {
 		}
 	}
 	{
-		p.SetState(44)
+		p.SetState(38)
 		p.Key()
 	}
 
@@ -843,7 +778,7 @@ func (p *RocksQLParser) DeleteOperation() (localctx IDeleteOperationContext) {
 	p.EnterRule(localctx, 8, RocksQLParserRULE_deleteOperation)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(46)
+		p.SetState(40)
 		p.Match(RocksQLParserT__2)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -851,180 +786,8 @@ func (p *RocksQLParser) DeleteOperation() (localctx IDeleteOperationContext) {
 		}
 	}
 	{
-		p.SetState(47)
+		p.SetState(41)
 		p.Key()
-	}
-
-errorExit:
-	if p.HasError() {
-		v := p.GetError()
-		localctx.SetException(v)
-		p.GetErrorHandler().ReportError(p, v)
-		p.GetErrorHandler().Recover(p, v)
-		p.SetError(nil)
-	}
-	p.ExitRule()
-	return localctx
-	goto errorExit // Trick to prevent compiler error if the label is not used
-}
-
-// IBatchOperationContext is an interface to support dynamic dispatch.
-type IBatchOperationContext interface {
-	antlr.ParserRuleContext
-
-	// GetParser returns the parser.
-	GetParser() antlr.Parser
-
-	// Getter signatures
-	AllBatchEntry() []IBatchEntryContext
-	BatchEntry(i int) IBatchEntryContext
-
-	// IsBatchOperationContext differentiates from other interfaces.
-	IsBatchOperationContext()
-}
-
-type BatchOperationContext struct {
-	antlr.BaseParserRuleContext
-	parser antlr.Parser
-}
-
-func NewEmptyBatchOperationContext() *BatchOperationContext {
-	var p = new(BatchOperationContext)
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = RocksQLParserRULE_batchOperation
-	return p
-}
-
-func InitEmptyBatchOperationContext(p *BatchOperationContext) {
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = RocksQLParserRULE_batchOperation
-}
-
-func (*BatchOperationContext) IsBatchOperationContext() {}
-
-func NewBatchOperationContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *BatchOperationContext {
-	var p = new(BatchOperationContext)
-
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
-
-	p.parser = parser
-	p.RuleIndex = RocksQLParserRULE_batchOperation
-
-	return p
-}
-
-func (s *BatchOperationContext) GetParser() antlr.Parser { return s.parser }
-
-func (s *BatchOperationContext) AllBatchEntry() []IBatchEntryContext {
-	children := s.GetChildren()
-	len := 0
-	for _, ctx := range children {
-		if _, ok := ctx.(IBatchEntryContext); ok {
-			len++
-		}
-	}
-
-	tst := make([]IBatchEntryContext, len)
-	i := 0
-	for _, ctx := range children {
-		if t, ok := ctx.(IBatchEntryContext); ok {
-			tst[i] = t.(IBatchEntryContext)
-			i++
-		}
-	}
-
-	return tst
-}
-
-func (s *BatchOperationContext) BatchEntry(i int) IBatchEntryContext {
-	var t antlr.RuleContext
-	j := 0
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IBatchEntryContext); ok {
-			if j == i {
-				t = ctx.(antlr.RuleContext)
-				break
-			}
-			j++
-		}
-	}
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(IBatchEntryContext)
-}
-
-func (s *BatchOperationContext) GetRuleContext() antlr.RuleContext {
-	return s
-}
-
-func (s *BatchOperationContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
-	return antlr.TreesStringTree(s, ruleNames, recog)
-}
-
-func (s *BatchOperationContext) EnterRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(RocksQLListener); ok {
-		listenerT.EnterBatchOperation(s)
-	}
-}
-
-func (s *BatchOperationContext) ExitRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(RocksQLListener); ok {
-		listenerT.ExitBatchOperation(s)
-	}
-}
-
-func (p *RocksQLParser) BatchOperation() (localctx IBatchOperationContext) {
-	localctx = NewBatchOperationContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 10, RocksQLParserRULE_batchOperation)
-	var _la int
-
-	p.EnterOuterAlt(localctx, 1)
-	{
-		p.SetState(49)
-		p.Match(RocksQLParserT__3)
-		if p.HasError() {
-			// Recognition error - abort rule
-			goto errorExit
-		}
-	}
-	{
-		p.SetState(50)
-		p.Match(RocksQLParserT__4)
-		if p.HasError() {
-			// Recognition error - abort rule
-			goto errorExit
-		}
-	}
-	p.SetState(52)
-	p.GetErrorHandler().Sync(p)
-	if p.HasError() {
-		goto errorExit
-	}
-	_la = p.GetTokenStream().LA(1)
-
-	for ok := true; ok; ok = _la == RocksQLParserT__0 || _la == RocksQLParserT__2 {
-		{
-			p.SetState(51)
-			p.BatchEntry()
-		}
-
-		p.SetState(54)
-		p.GetErrorHandler().Sync(p)
-		if p.HasError() {
-			goto errorExit
-		}
-		_la = p.GetTokenStream().LA(1)
-	}
-	{
-		p.SetState(56)
-		p.Match(RocksQLParserT__5)
-		if p.HasError() {
-			// Recognition error - abort rule
-			goto errorExit
-		}
 	}
 
 errorExit:
@@ -1141,8 +904,8 @@ func (s *BatchEntryContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *RocksQLParser) BatchEntry() (localctx IBatchEntryContext) {
 	localctx = NewBatchEntryContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 12, RocksQLParserRULE_batchEntry)
-	p.SetState(60)
+	p.EnterRule(localctx, 10, RocksQLParserRULE_batchEntry)
+	p.SetState(45)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -1152,145 +915,20 @@ func (p *RocksQLParser) BatchEntry() (localctx IBatchEntryContext) {
 	case RocksQLParserT__0:
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(58)
+			p.SetState(43)
 			p.PutOperation()
 		}
 
 	case RocksQLParserT__2:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(59)
+			p.SetState(44)
 			p.DeleteOperation()
 		}
 
 	default:
 		p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
 		goto errorExit
-	}
-
-errorExit:
-	if p.HasError() {
-		v := p.GetError()
-		localctx.SetException(v)
-		p.GetErrorHandler().ReportError(p, v)
-		p.GetErrorHandler().Recover(p, v)
-		p.SetError(nil)
-	}
-	p.ExitRule()
-	return localctx
-	goto errorExit // Trick to prevent compiler error if the label is not used
-}
-
-// ISnapshotOperationContext is an interface to support dynamic dispatch.
-type ISnapshotOperationContext interface {
-	antlr.ParserRuleContext
-
-	// GetParser returns the parser.
-	GetParser() antlr.Parser
-
-	// Getter signatures
-	Identifier() IIdentifierContext
-
-	// IsSnapshotOperationContext differentiates from other interfaces.
-	IsSnapshotOperationContext()
-}
-
-type SnapshotOperationContext struct {
-	antlr.BaseParserRuleContext
-	parser antlr.Parser
-}
-
-func NewEmptySnapshotOperationContext() *SnapshotOperationContext {
-	var p = new(SnapshotOperationContext)
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = RocksQLParserRULE_snapshotOperation
-	return p
-}
-
-func InitEmptySnapshotOperationContext(p *SnapshotOperationContext) {
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = RocksQLParserRULE_snapshotOperation
-}
-
-func (*SnapshotOperationContext) IsSnapshotOperationContext() {}
-
-func NewSnapshotOperationContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *SnapshotOperationContext {
-	var p = new(SnapshotOperationContext)
-
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
-
-	p.parser = parser
-	p.RuleIndex = RocksQLParserRULE_snapshotOperation
-
-	return p
-}
-
-func (s *SnapshotOperationContext) GetParser() antlr.Parser { return s.parser }
-
-func (s *SnapshotOperationContext) Identifier() IIdentifierContext {
-	var t antlr.RuleContext
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IIdentifierContext); ok {
-			t = ctx.(antlr.RuleContext)
-			break
-		}
-	}
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(IIdentifierContext)
-}
-
-func (s *SnapshotOperationContext) GetRuleContext() antlr.RuleContext {
-	return s
-}
-
-func (s *SnapshotOperationContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
-	return antlr.TreesStringTree(s, ruleNames, recog)
-}
-
-func (s *SnapshotOperationContext) EnterRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(RocksQLListener); ok {
-		listenerT.EnterSnapshotOperation(s)
-	}
-}
-
-func (s *SnapshotOperationContext) ExitRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(RocksQLListener); ok {
-		listenerT.ExitSnapshotOperation(s)
-	}
-}
-
-func (p *RocksQLParser) SnapshotOperation() (localctx ISnapshotOperationContext) {
-	localctx = NewSnapshotOperationContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 14, RocksQLParserRULE_snapshotOperation)
-	var _la int
-
-	p.EnterOuterAlt(localctx, 1)
-	{
-		p.SetState(62)
-		p.Match(RocksQLParserT__6)
-		if p.HasError() {
-			// Recognition error - abort rule
-			goto errorExit
-		}
-	}
-	{
-		p.SetState(63)
-		_la = p.GetTokenStream().LA(1)
-
-		if !(_la == RocksQLParserT__7 || _la == RocksQLParserT__8) {
-			p.GetErrorHandler().RecoverInline(p)
-		} else {
-			p.GetErrorHandler().ReportMatch(p)
-			p.Consume()
-		}
-	}
-	{
-		p.SetState(64)
-		p.Identifier()
 	}
 
 errorExit:
@@ -1390,46 +1028,46 @@ func (s *AdminCommandContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *RocksQLParser) AdminCommand() (localctx IAdminCommandContext) {
 	localctx = NewAdminCommandContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 16, RocksQLParserRULE_adminCommand)
+	p.EnterRule(localctx, 12, RocksQLParserRULE_adminCommand)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(66)
-		p.Match(RocksQLParserT__9)
+		p.SetState(47)
+		p.Match(RocksQLParserT__3)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
 		}
 	}
-	p.SetState(70)
+	p.SetState(51)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
 	}
 
 	switch p.GetTokenStream().LA(1) {
-	case RocksQLParserT__10:
+	case RocksQLParserT__4:
 		{
-			p.SetState(67)
-			p.Match(RocksQLParserT__10)
+			p.SetState(48)
+			p.Match(RocksQLParserT__4)
 			if p.HasError() {
 				// Recognition error - abort rule
 				goto errorExit
 			}
 		}
 
-	case RocksQLParserT__11:
+	case RocksQLParserT__5:
 		{
-			p.SetState(68)
-			p.Match(RocksQLParserT__11)
+			p.SetState(49)
+			p.Match(RocksQLParserT__5)
 			if p.HasError() {
 				// Recognition error - abort rule
 				goto errorExit
 			}
 		}
 
-	case RocksQLParserT__12:
+	case RocksQLParserT__6:
 		{
-			p.SetState(69)
+			p.SetState(50)
 			p.ConfigCommand()
 		}
 
@@ -1552,30 +1190,30 @@ func (s *ConfigCommandContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *RocksQLParser) ConfigCommand() (localctx IConfigCommandContext) {
 	localctx = NewConfigCommandContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 18, RocksQLParserRULE_configCommand)
+	p.EnterRule(localctx, 14, RocksQLParserRULE_configCommand)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(72)
-		p.Match(RocksQLParserT__12)
+		p.SetState(53)
+		p.Match(RocksQLParserT__6)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
 		}
 	}
 	{
-		p.SetState(73)
-		p.Match(RocksQLParserT__13)
+		p.SetState(54)
+		p.Match(RocksQLParserT__7)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
 		}
 	}
 	{
-		p.SetState(74)
+		p.SetState(55)
 		p.Option()
 	}
 	{
-		p.SetState(75)
+		p.SetState(56)
 		p.Value()
 	}
 
@@ -1669,12 +1307,12 @@ func (s *KeyContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *RocksQLParser) Key() (localctx IKeyContext) {
 	localctx = NewKeyContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 20, RocksQLParserRULE_key)
+	p.EnterRule(localctx, 16, RocksQLParserRULE_key)
 	var _la int
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(77)
+		p.SetState(58)
 		_la = p.GetTokenStream().LA(1)
 
 		if !(_la == RocksQLParserSTRING || _la == RocksQLParserIDENTIFIER) {
@@ -1775,12 +1413,12 @@ func (s *ValueContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *RocksQLParser) Value() (localctx IValueContext) {
 	localctx = NewValueContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 22, RocksQLParserRULE_value)
+	p.EnterRule(localctx, 18, RocksQLParserRULE_value)
 	var _la int
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(79)
+		p.SetState(60)
 		_la = p.GetTokenStream().LA(1)
 
 		if !(_la == RocksQLParserSTRING || _la == RocksQLParserNUMBER) {
@@ -1876,10 +1514,10 @@ func (s *IdentifierContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *RocksQLParser) Identifier() (localctx IIdentifierContext) {
 	localctx = NewIdentifierContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 24, RocksQLParserRULE_identifier)
+	p.EnterRule(localctx, 20, RocksQLParserRULE_identifier)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(81)
+		p.SetState(62)
 		p.Match(RocksQLParserIDENTIFIER)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -1972,10 +1610,10 @@ func (s *OptionContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *RocksQLParser) Option() (localctx IOptionContext) {
 	localctx = NewOptionContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 26, RocksQLParserRULE_option)
+	p.EnterRule(localctx, 22, RocksQLParserRULE_option)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(83)
+		p.SetState(64)
 		p.Match(RocksQLParserIDENTIFIER)
 		if p.HasError() {
 			// Recognition error - abort rule

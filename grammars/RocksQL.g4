@@ -8,8 +8,6 @@ operation
     : putOperation
     | getOperation
     | deleteOperation
-    | batchOperation
-    | snapshotOperation
     | adminCommand
     ;
 
@@ -22,16 +20,11 @@ getOperation: 'GET' key;
 // Delete operation (e.g., DELETE key)
 deleteOperation: 'DEL' key;
 
-// Batch operations for multiple key-value changes
-batchOperation: 'BATCH' '{' batchEntry+ '}';
 
 batchEntry
     : putOperation
     | deleteOperation
     ;
-
-// Snapshot operation (e.g., SNAPSHOT CREATE name)
-snapshotOperation: 'SNAPSHOT' ('CREATE' | 'DELETE') identifier;
 
 // Administrative commands (e.g., ADMIN COMPACT, ADMIN CONFIG SET option value)
 adminCommand

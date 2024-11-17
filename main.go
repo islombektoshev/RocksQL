@@ -34,7 +34,7 @@ func main() {
 	defer db.Close()
 
 	eng := engine.NewEngine(db)
-    Loop(eng)
+	Loop(eng)
 }
 
 func Loop(eng engine.Engine) {
@@ -42,7 +42,7 @@ func Loop(eng engine.Engine) {
 	for {
 		fmt.Print(">")
 		line, err := reader.ReadString('\n')
-        line = line[:len(line)-1]
+		line = line[:len(line)-1]
 		if err != nil {
 			log.Fatal("ERR: {}", err)
 		}
@@ -54,15 +54,16 @@ func Loop(eng engine.Engine) {
 		if len(tokens) < 1 {
 			continue
 		}
-        var firstToken = strings.ToUpper(tokens[0]);
+
+		var firstToken = strings.ToUpper(tokens[0])
 		switch firstToken {
 		case "GET":
 			if len(tokens) != 2 {
 				fmt.Println("Wrong format GET. Example: `GET 1`")
 				continue
 			}
-            var key = tokens[1];
-            // fmt.Printf("\nDEBUG GET '%s'", key);
+			var key = tokens[1]
+			// fmt.Printf("\nDEBUG GET '%s'", key);
 			var res = eng.Get([]byte(key))
 			if res.Err != nil {
 				log.Printf("Error occurding during GET: %+v", err)
@@ -74,9 +75,9 @@ func Loop(eng engine.Engine) {
 				fmt.Println("Wrong format PUT. Example: `PUT 1 value`")
 				continue
 			}
-            var key=tokens[1]
-            var val=tokens[2]
-            //fmt.Printf("\nDEBUG PUT '%s' '%s'", key, val);
+			var key = tokens[1]
+			var val = tokens[2]
+			//fmt.Printf("\nDEBUG PUT '%s' '%s'", key, val);
 			var res = eng.Put([]byte(key), []byte(val))
 			if res.Err != nil {
 				log.Printf("Error occurding during GET: %+v", err)
@@ -85,11 +86,11 @@ func Loop(eng engine.Engine) {
 			}
 			continue
 
-        case "EXIT":
-            return;
-        default:
-            fmt.Println("unknown command, ex: GET, PUT")
-            continue;
+		case "EXIT":
+			return
+		default:
+			fmt.Println("unknown command, ex: GET, PUT")
+			continue
 		}
 	}
 }

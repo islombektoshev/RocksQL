@@ -8,6 +8,7 @@ require (
 	github.com/antlr4-go/antlr/v4 v4.13.1
 	github.com/linxGnu/grocksdb v1.9.7
 	github.com/stretchr/testify v1.9.0
+	gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405
 )
 
 require (

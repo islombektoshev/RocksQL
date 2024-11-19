@@ -34,3 +34,31 @@ func (i *Impl) Get(key []byte) DataRes {
 	copy(res, bytes)
 	return DataRes{OpRes{Err: nil}, res}
 }
+
+func (i *Impl) Iter(starting []byte, limit int) ([]Pair, error) {
+	var rdOpt = grocksdb.NewDefaultReadOptions()
+	it := i.db.NewIterator(rdOpt)
+	it.Seek(starting)
+	res := make([]Pair, 0, limit)
+    var idx = 0;
+	for it.Valid() && idx < limit {
+		keyData := it.Key().Data()
+		defer it.Key().Free()
+
+		valData := it.Value().Data()
+		defer it.Value().Free()
+
+		var key = make([]byte, len(keyData))
+		copy(key, keyData)
+
+		var val = make([]byte, len(valData))
+		copy(val, valData)
+		res = append(res, Pair{
+			Key: key,
+			Val: val,
+		})
+		it.Next()
+        idx++
+	}
+	return res, nil
+}

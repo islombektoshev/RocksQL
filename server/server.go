@@ -7,6 +7,7 @@ import (
 	"log"
 	"log/slog"
 	"net"
+	"strconv"
 	"strings"
 
 	"github.com/islombektoshev/RocksQL/engine"
@@ -130,6 +131,39 @@ func ExecuteCmd(cmds []string, eng engine.Engine) resp.RESPValue {
 			Type:        resp.TypeBulkString,
 			StringValue: string(res.Data),
 		}
+	case "ITER":
+		if len(cmds) > 3 || len(cmds) < 2 {
+			return resp.RESPValue{
+				Type:        resp.TypeSimpleError,
+				StringValue: "Wrong format ITER. Example: `ITER count [start]`",
+			}
+		}
+        var limit, err = strconv.Atoi(cmds[1]);
+        if err != nil {
+            return resp.RESPValue{
+                Type: resp.TypeSimpleError,
+                StringValue: "cannot parse count",
+            }
+        }
+		var startingKey []byte = nil
+		if len(cmds) > 2 {
+			startingKey = []byte(cmds[2])
+		}
+		pairs, err := eng.Iter(startingKey, limit)
+		if err != nil {
+			return resp.RESPValue{
+				Type:        resp.TypeSimpleError,
+				StringValue: fmt.Errorf("Error occurding during GET: %+v", err).Error(),
+			}
+		}
+		res := resp.RESPValue{
+			Type: resp.TypeArray,
+		}
+		for _, p := range pairs {
+			res.Array = append(res.Array, resp.RESPValue{Type: resp.TypeBulkString, StringValue: string(p.Key)})
+			res.Array = append(res.Array, resp.RESPValue{Type: resp.TypeBulkString, StringValue: string(p.Val)})
+		}
+		return res
 	case "PUT", "SET":
 		if len(cmds) != 3 {
 			return resp.RESPValue{
@@ -154,7 +188,7 @@ func ExecuteCmd(cmds []string, eng engine.Engine) resp.RESPValue {
 	default:
 		return resp.RESPValue{
 			Type:        resp.TypeSimpleError,
-			StringValue: "unkown command: available commands: GET, PUT, SET",
+			StringValue: "unkown command: available commands: GET, PUT, SET, ITER",
 		}
 	}
 }

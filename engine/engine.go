@@ -9,7 +9,12 @@ type DataRes struct {
 	Data []byte
 }
 
+type Pair struct {
+	Key []byte
+	Val []byte
+}
 type Engine interface {
 	Put([]byte, []byte) OpRes
 	Get([]byte) DataRes
+	Iter(starting []byte, limit int) ([]Pair, error)
 }

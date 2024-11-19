@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -9,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/islombektoshev/RocksQL/engine"
+	"github.com/islombektoshev/RocksQL/server"
 	"github.com/islombektoshev/RocksQL/util"
 	"github.com/linxGnu/grocksdb"
 )
@@ -16,11 +18,13 @@ import (
 const DefaultDbPath = "/tmp/rocksql/db"
 
 var (
-	dbPath string
+	dbPath     string
+	serverPort int
 )
 
 func main() {
 	flag.StringVar(&dbPath, "dbpath", "rocksql-data", "Please set you some dbpath to run")
+	flag.IntVar(&serverPort, "port", 6666, "Server port")
 	flag.Parse()
 
 	var opt = grocksdb.NewDefaultOptions()
@@ -34,7 +38,14 @@ func main() {
 	defer db.Close()
 
 	eng := engine.NewEngine(db)
-	Loop(eng)
+    svr := server.NewServer(eng, "0.0.0.0:6666")
+    err = svr.StartListening()
+    if err != nil {
+        fmt.Printf("cannot listen port 6666, err: %+v", err)
+    }
+    svr.AcceptContinously(context.Background())
+
+//	Loop(eng)
 }
 
 func Loop(eng engine.Engine) {

@@ -11,7 +11,7 @@ import (
 const TestDirName = "rocksql-temp-test"
 
 func PrepareTestDirPath() string {
-	return os.TempDir() + TestDirName + "/" + strconv.FormatInt(time.Now().UnixMicro(), 10)
+	return os.TempDir() + "/" + TestDirName + "/" + strconv.FormatInt(time.Now().UnixMicro(), 10)
 }
 
 func MustMakeDir(path string) {

@@ -11,7 +11,7 @@ import (
 
 func TestParserTestTrival_OK(t *testing.T) {
 	pipeReader, pipeWriter := io.Pipe()
-	parser := resp.NewParser(pipeReader, nil)
+	parser := resp.NewParser(pipeReader)
 	go func() {
 		val, err := parser.ReadNext()
 		assert.NoError(t, err)
@@ -35,7 +35,7 @@ func TestParserTestTrival_OK(t *testing.T) {
 
 func TestParserTestTrival_OK_2(t *testing.T) {
 	pipeReader, pipeWriter := io.Pipe()
-	parser := resp.NewParser(pipeReader, nil)
+	parser := resp.NewParser(pipeReader)
 	go func() {
 		pipeWriter.Write([]byte("*4\r\n$3\r\nGET\r\n:123\r\n+hello\r\n-error-content\r\n"))
 	}()

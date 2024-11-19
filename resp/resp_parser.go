@@ -26,23 +26,16 @@ const (
 )
 
 type RESPParser struct {
-	reader  *RESPReader
-	onEvent func(data interface{}, err error)
-	buffer  []byte // Buffer for partial data
+	reader *RESPReader
+	buffer []byte // Buffer for partial data
 }
 
 func NewParser(
 	reader io.Reader,
-	onEvent func(data interface{}, err error),
 ) *RESPParser {
 	return &RESPParser{
-		reader:  NewRESPReader(reader),
-		onEvent: onEvent,
+		reader: NewRESPReader(reader),
 	}
-}
-
-func (r *RESPParser) ReadContinously() {
-
 }
 
 type RESPValue struct {
@@ -128,7 +121,7 @@ func (r *RESPParser) ReadNext() (RESPValue, error) {
 
 	case TypeSimpleString, TypeSimpleError:
 		line, err := r.reader.ReadLine()
-        fmt.Printf("reading line for %v, line: %s\n", rune(firstByte), line);
+		fmt.Printf("reading line for %v, line: %s\n", rune(firstByte), line)
 		if err != nil {
 			return RESPValue{}, err
 		}

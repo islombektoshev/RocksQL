@@ -4,8 +4,11 @@ LZ4_DIR     :=  /opt/homebrew/opt/lz4
 ZSTD_DIR    :=  /opt/homebrew/opt/zstd
 LIBS        :=  -lrocksdb
 GO         := go
+
 CC         := gcc
 CXX        := g++
+#CC         := "zig cc"
+#CXX        := "zig c++"
 
 CGO_FLAGS  := CGO_ENABLED=1 CC=$(CC) CXX=$(CXX)
 INCLUDE    := -I$(ROCKSDB_DIR)/include
@@ -32,8 +35,11 @@ run:
 	make build
 	./$(BINARY)
 
+gen:
+	go generate ./...
 
-test:
+
+test: gen
 	$(CGO_FLAGS) \
 	CGO_CFLAGS="$(INCLUDE)" \
 	CGO_LDFLAGS="$(LIBS)" \
@@ -56,4 +62,4 @@ clean-grammar:
 	rm grammars/rocksql_listener.go
 
 
-.PHONY: all build clean grammar clean-grammar
+.PHONY: all build clean grammar clean-grammar gen test

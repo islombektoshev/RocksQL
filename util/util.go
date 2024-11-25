@@ -1,7 +1,9 @@
 package util
 
 import (
+	"bytes"
 	"fmt"
+	"math/rand"
 	"os"
 	"strconv"
 	"strings"
@@ -73,4 +75,18 @@ func Tokenize(line string) ([]string, error) {
 		return nil, fmt.Errorf("not closing quote")
 	}
 	return tokens, nil
+}
+
+func RandString(rn *rand.Rand, maxBound int, notAllowed []byte) string {
+	count := rn.Intn(maxBound)
+	arr := make([]byte, count)
+	for i := 0; i < count; {
+		bayt := byte(rn.Intn(1 << 8))
+		if bytes.Contains(notAllowed, []byte{bayt}) {
+			continue
+		}
+		arr[i] = bayt
+		i++
+	}
+	return string(arr)
 }

@@ -5,7 +5,6 @@ import (
 
 	"github.com/islombektoshev/RocksQL/engine"
 	"github.com/islombektoshev/RocksQL/util"
-	"github.com/linxGnu/grocksdb"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,11 +12,7 @@ func TestEngine(t *testing.T) {
 	var testDir = util.MustPrepareTestDir()
 	defer util.MustDeleteTestDir(testDir)
 
-	var opt = grocksdb.NewDefaultOptions()
-	opt.SetCreateIfMissing(true)
-	defer opt.Destroy()
-
-	var db, err = grocksdb.OpenDb(opt, testDir)
+	var db, err = engine.OpenDB(testDir)
 	assert.NoError(t, err, "OpenDb")
 
 	var engine = engine.NewEngine(db)

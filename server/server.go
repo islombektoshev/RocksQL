@@ -7,22 +7,24 @@ import (
 	"log"
 	"log/slog"
 	"net"
-	"strconv"
-	"strings"
 
-	"github.com/islombektoshev/RocksQL/engine"
 	"github.com/islombektoshev/RocksQL/resp"
 )
 
 type Server struct {
-	eng      engine.Engine
 	address  string
+	handler  Handler
 	listener net.Listener
 }
 
-func NewServer(eng engine.Engine, address string) *Server {
+//go:generate mockery --with-expecter --name=Handler --output=mocks --outpkg=mocks
+type Handler interface {
+	ExecuteCmd(cmds []string) resp.RESPValue
+}
+
+func NewServer(handler Handler, address string) *Server {
 	return &Server{
-		eng:     eng,
+		handler: handler,
 		address: address,
 	}
 }
@@ -40,57 +42,93 @@ func (s *Server) StartListening() error {
 	return nil
 }
 
-func (s *Server) AcceptContinously(cont context.Context) {
+func (s *Server) Addr() string {
+	if s.listener != nil {
+		return s.listener.Addr().String()
+	}
+	return ""
+}
+func (s *Server) doAcceptSingle(conn net.Conn) {
+	reader := resp.NewRESPReader(conn)
+	parser := resp.NewParser(reader)
+
+readBlk:
 	for {
+		var cmds []string
+		var result resp.RESPValue
+		respValue, err := parser.ReadNext()
+		if err != nil {
+			if err == io.EOF {
+				break readBlk
+			} else {
+				result = resp.RESPValue{
+					Type:        resp.TypeSimpleError,
+					StringValue: err.Error(),
+				}
+				goto respondeWithResult
+			}
+		}
+
+		cmds, err = RespValueToCmd(respValue)
+		if err != nil {
+			result = resp.RESPValue{
+				Type:        resp.TypeSimpleError,
+				StringValue: err.Error(),
+			}
+
+			goto respondeWithResult
+		}
+		result = s.handler.ExecuteCmd(cmds)
+
+	respondeWithResult:
+		resByts, err := resp.SerializeRespValue(result)
+		if err != nil {
+			log.Fatal("[BUG] Cannot parse simple RESPValue")
+		}
+		_, err = conn.Write(resByts)
+		if err != nil {
+			slog.Warn("Closing connection, Connection returned error.", "error", err)
+			conn.Close()
+			break readBlk
+		}
+
+	}
+}
+
+func (s *Server) AcceptContinously(ctx context.Context, MAX_CONN int) {
+	var semaphore = make(chan int, MAX_CONN)
+	var byebye = false
+	go func() {
+		<-ctx.Done()
+		byebye = true
+		slog.Info("Shutting Down Sever")
+		err := s.listener.Close()
+		if err != nil {
+			slog.Error("Unable to close server", "error", err)
+		}
+	}()
+
+	for {
+		semaphore <- 0
+
 		conn, err := s.listener.Accept()
 		if err != nil {
-			slog.Error("Server: cannot accpet connectition: err {}", err)
-		}
-		go func() {
-			reader := resp.NewRESPReader(conn)
-			parser := resp.NewParser(reader)
-		readBlk:
-			for {
-				var cmds []string
-				var result resp.RESPValue
-				respValue, err := parser.ReadNext()
-				if err != nil {
-					if err == io.EOF {
-						break readBlk
-					} else {
-						result = resp.RESPValue{
-							Type:        resp.TypeSimpleError,
-							StringValue: err.Error(),
-						}
-						goto respondeWithResult
-					}
-				}
-
-				cmds, err = RespValueToCmd(respValue)
-				if err != nil {
-					result = resp.RESPValue{
-						Type:        resp.TypeSimpleError,
-						StringValue: err.Error(),
-					}
-
-					goto respondeWithResult
-				}
-				result = ExecuteCmd(cmds, s.eng)
-
-			respondeWithResult:
-				resByts, err := resp.SerilizeRespValue(result)
-				if err != nil {
-					log.Fatal("[BUG] Cannot parse simple RESPValue")
-				}
-				_, err = conn.Write(resByts)
-				if err != nil {
-					slog.Warn("Connection returned error: {}", err)
-					slog.Warn("Closing connection")
-					conn.Close()
-					break readBlk
-				}
-
+			if byebye {
+				slog.Info("Server: connection closed: err {}", "error", err)
+				return
+			} else {
+				slog.Error("Server: cannot accpet connection: err {}", "error", err)
 			}
+		}
+
+		slog.Debug("New Connection created", "raddr", conn.RemoteAddr())
+
+		go func() {
+			defer func() {
+				<-semaphore
+			}()
+
+			s.doAcceptSingle(conn)
 		}()
 	}
 }
@@ -107,88 +145,4 @@ func RespValueToCmd(val resp.RESPValue) ([]string, error) {
 		res = append(res, item.StringValue)
 	}
 	return res, nil
-}
-
-func ExecuteCmd(cmds []string, eng engine.Engine) resp.RESPValue {
-	var firstToken = strings.ToUpper(cmds[0])
-	switch firstToken {
-	case "GET":
-		if len(cmds) != 2 {
-			return resp.RESPValue{
-				Type:        resp.TypeSimpleError,
-				StringValue: "Wrong format GET. Example: `GET 1`",
-			}
-		}
-		var key = cmds[1]
-		var res = eng.Get([]byte(key))
-		if res.Err != nil {
-			return resp.RESPValue{
-				Type:        resp.TypeSimpleError,
-				StringValue: fmt.Errorf("Error occurding during GET: %+v", res.Err).Error(),
-			}
-		}
-		return resp.RESPValue{
-			Type:        resp.TypeBulkString,
-			StringValue: string(res.Data),
-		}
-	case "ITER":
-		if len(cmds) > 3 || len(cmds) < 2 {
-			return resp.RESPValue{
-				Type:        resp.TypeSimpleError,
-				StringValue: "Wrong format ITER. Example: `ITER count [start]`",
-			}
-		}
-        var limit, err = strconv.Atoi(cmds[1]);
-        if err != nil {
-            return resp.RESPValue{
-                Type: resp.TypeSimpleError,
-                StringValue: "cannot parse count",
-            }
-        }
-		var startingKey []byte = nil
-		if len(cmds) > 2 {
-			startingKey = []byte(cmds[2])
-		}
-		pairs, err := eng.Iter(startingKey, limit)
-		if err != nil {
-			return resp.RESPValue{
-				Type:        resp.TypeSimpleError,
-				StringValue: fmt.Errorf("Error occurding during GET: %+v", err).Error(),
-			}
-		}
-		res := resp.RESPValue{
-			Type: resp.TypeArray,
-		}
-		for _, p := range pairs {
-			res.Array = append(res.Array, resp.RESPValue{Type: resp.TypeBulkString, StringValue: string(p.Key)})
-			res.Array = append(res.Array, resp.RESPValue{Type: resp.TypeBulkString, StringValue: string(p.Val)})
-		}
-		return res
-	case "PUT", "SET":
-		if len(cmds) != 3 {
-			return resp.RESPValue{
-				Type:        resp.TypeSimpleError,
-				StringValue: "Wrong format PUT. Example: `PUT 1 value`",
-			}
-		}
-		var key = cmds[1]
-		var val = cmds[2]
-		var res = eng.Put([]byte(key), []byte(val))
-		if res.Err != nil {
-			return resp.RESPValue{
-				Type:        resp.TypeSimpleError,
-				StringValue: fmt.Errorf("Error occurding during PUT: %+v", res.Err).Error(),
-			}
-		} else {
-			return resp.RESPValue{
-				Type:        resp.TypeSimpleString,
-				StringValue: "OK",
-			}
-		}
-	default:
-		return resp.RESPValue{
-			Type:        resp.TypeSimpleError,
-			StringValue: "unkown command: available commands: GET, PUT, SET, ITER",
-		}
-	}
 }

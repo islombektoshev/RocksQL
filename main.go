@@ -1,110 +1,100 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"flag"
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
+	"os/signal"
 	"strings"
+	"sync"
+	"syscall"
 
 	"github.com/islombektoshev/RocksQL/engine"
 	"github.com/islombektoshev/RocksQL/server"
-	"github.com/islombektoshev/RocksQL/util"
-	"github.com/linxGnu/grocksdb"
 )
 
 const DefaultDbPath = "/tmp/rocksql/db"
 
 var (
-	dbPath string
-	port   int
-	host   string
+	dbPath   string
+	port     int
+	host     string
+	maxConn  int
+	logLevel string
 )
 
+func ParseParams() {
+	var cli = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+	cli.StringVar(&dbPath, "dbpath", "rocksql-data", "Please set you some dbpath to run")
+	cli.StringVar(&host, "host", "localhost", "Please set sever host to run")
+	cli.StringVar(&logLevel, "log-level", "info", "Please set log level, values are: debug, info, warn, error")
+	cli.IntVar(&port, "port", 6666, "Pease set server port to run")
+	cli.IntVar(&maxConn, "max-conn", 20, "Plase set max num of simultanious connections")
+	cli.Parse(os.Args[1:])
+}
+
+func ParseLogLevel() (slog.Level, error) {
+	logLevel = strings.ToLower(logLevel)
+	switch logLevel {
+	case "debug":
+		return slog.LevelDebug, nil
+	case "info":
+		return slog.LevelInfo, nil
+	case "warn":
+		return slog.LevelWarn, nil
+	case "error":
+		return slog.LevelError, nil
+	}
+	return 0, fmt.Errorf("unexpected value")
+}
+
 func main() {
-	flag.StringVar(&dbPath, "dbpath", "rocksql-data", "Please set you some dbpath to run")
-	flag.StringVar(&host, "host", "localhost", "Please set sever host to run")
-	flag.IntVar(&port, "port", 6666, "Pease set server port to run")
+	ParseParams()
 
-	flag.Parse()
-
-	var opt = grocksdb.NewDefaultOptions()
-	opt.SetCreateIfMissing(true)
-	defer opt.Destroy()
-
-	var db, err = grocksdb.OpenDb(opt, dbPath)
+	var db, err = engine.OpenDB(dbPath)
 	if err != nil {
-		panic(fmt.Errorf("cannot open db: %+v", err))
+		slog.Error("Cannot open db", "path", dbPath, "error", err)
+		os.Exit(1)
 	}
 	defer db.Close()
 
 	eng := engine.NewEngine(db)
-	svr := server.NewServer(eng, fmt.Sprintf("%s:%d", host, port))
-	err = svr.StartListening()
-	if err != nil {
-		fmt.Printf("cannot listen port 6666, err: %+v", err)
-	}
-	svr.AcceptContinously(context.Background())
 
-	// Loop(eng)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	var wg sync.WaitGroup
+	var terminate = MakeTerminateChann()
+
+	StartServer(ctx, eng, maxConn, &wg)
+
+	select {
+	case <-terminate:
+		cancel()
+	}
+	wg.Wait()
 }
 
-func Loop(eng engine.Engine) {
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		fmt.Print(">")
-		line, err := reader.ReadString('\n')
-		line = line[:len(line)-1]
-		if err != nil {
-			log.Fatal("ERR: {}", err)
-		}
-		tokens, err := util.Tokenize(line)
-		if err != nil {
-			log.Printf("ERR: %v", err)
-			continue
-		}
-		if len(tokens) < 1 {
-			continue
-		}
+func MakeTerminateChann() chan os.Signal {
+	var terminate = make(chan os.Signal, 1)
+	signal.Notify(terminate, os.Interrupt, syscall.SIGTERM)
+	return terminate
+}
 
-		var firstToken = strings.ToUpper(tokens[0])
-		switch firstToken {
-		case "GET":
-			if len(tokens) != 2 {
-				fmt.Println("Wrong format GET. Example: `GET 1`")
-				continue
-			}
-			var key = tokens[1]
-			// fmt.Printf("\nDEBUG GET '%s'", key);
-			var res = eng.Get([]byte(key))
-			if res.Err != nil {
-				log.Printf("Error occurding during GET: %+v", err)
-			}
-			fmt.Println(string(res.Data))
-			continue
-		case "PUT":
-			if len(tokens) != 3 {
-				fmt.Println("Wrong format PUT. Example: `PUT 1 value`")
-				continue
-			}
-			var key = tokens[1]
-			var val = tokens[2]
-			//fmt.Printf("\nDEBUG PUT '%s' '%s'", key, val);
-			var res = eng.Put([]byte(key), []byte(val))
-			if res.Err != nil {
-				log.Printf("Error occurding during GET: %+v", err)
-			} else {
-				fmt.Println("OK")
-			}
-			continue
-
-		case "EXIT":
-			return
-		default:
-			fmt.Println("unknown command, ex: GET, PUT")
-			continue
-		}
+func StartServer(ctx context.Context, eng engine.Engine, numOfConn int, wg *sync.WaitGroup) {
+	svr := server.NewServer(&CmdRouter{Engine: eng}, fmt.Sprintf("%s:%d", host, port))
+	err := svr.StartListening()
+	if err != nil {
+		slog.Error("Unable to listern port", "port", port, "error", err)
+		os.Exit(1)
 	}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		slog.Info("Accepting connections")
+		svr.AcceptContinously(ctx, numOfConn)
+		slog.Info("Server is stoped")
+	}()
 }

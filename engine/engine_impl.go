@@ -3,18 +3,18 @@ package engine
 import "github.com/linxGnu/grocksdb"
 
 type Impl struct {
-	db *grocksdb.DB
+	DBContext
 }
 
-func NewEngine(db *grocksdb.DB) Engine {
-	return &Impl{db: db}
+func NewEngine(db DBContext) Engine {
+	return &Impl{DBContext: db}
 }
 
 func (i *Impl) Put(key []byte, val []byte) OpRes {
 	var wrOpt = grocksdb.NewDefaultWriteOptions()
 	defer wrOpt.Destroy()
 
-	err := i.db.Put(wrOpt, key, val)
+	err := i.DB.Put(wrOpt, key, val)
 
 	if err != nil {
 		return OpRes{Err: err}
@@ -24,7 +24,7 @@ func (i *Impl) Put(key []byte, val []byte) OpRes {
 
 func (i *Impl) Get(key []byte) DataRes {
 	var rdOpt = grocksdb.NewDefaultReadOptions()
-	slice, err := i.db.Get(rdOpt, key)
+	slice, err := i.DB.Get(rdOpt, key)
 	if err != nil {
 		return DataRes{OpRes{Err: err}, nil}
 	}
@@ -37,10 +37,10 @@ func (i *Impl) Get(key []byte) DataRes {
 
 func (i *Impl) Iter(starting []byte, limit int) ([]Pair, error) {
 	var rdOpt = grocksdb.NewDefaultReadOptions()
-	it := i.db.NewIterator(rdOpt)
+	it := i.DB.NewIterator(rdOpt)
 	it.Seek(starting)
 	res := make([]Pair, 0, limit)
-    var idx = 0;
+	var idx = 0
 	for it.Valid() && idx < limit {
 		keyData := it.Key().Data()
 		defer it.Key().Free()
@@ -58,7 +58,7 @@ func (i *Impl) Iter(starting []byte, limit int) ([]Pair, error) {
 			Val: val,
 		})
 		it.Next()
-        idx++
+		idx++
 	}
 	return res, nil
 }

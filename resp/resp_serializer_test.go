@@ -9,7 +9,7 @@ import (
 
 func TestSerilizer(t *testing.T) {
 	data := []byte("*4\r\n$3\r\nGET\r\n:123\r\n+hello\r\n-error-content\r\n")
-	val, err := resp.SerilizeRespValue(
+	val, err := resp.SerializeRespValue(
 		resp.RESPValue{
 			Type: resp.TypeArray,
 			Array: []resp.RESPValue{
@@ -34,5 +34,4 @@ func TestSerilizer(t *testing.T) {
 	)
 	assert.NoError(t, err)
 	assert.Equal(t, data, val)
-
 }

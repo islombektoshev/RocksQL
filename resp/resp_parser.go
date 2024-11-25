@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+
+	"github.com/islombektoshev/RocksQL/check"
 )
 
 type FeedRes struct {
@@ -55,12 +57,19 @@ func (r *RESPParser) ReadNext() (RESPValue, error) {
 	res.Type = firstByte
 	switch firstByte {
 	case TypeArray:
+		defer func() {
+			check.That(len(res.StringValue) == 0)
+			check.That(res.IntValue == 0)
+		}()
 		lenAsStr, err := r.reader.ReadLine()
 		if err != nil {
 			return RESPValue{}, err
 		}
 
 		count, err := strconv.Atoi(lenAsStr)
+		defer func() {
+			check.That(len(res.Array) == count)
+		}()
 		if err != nil {
 			return RESPValue{}, err
 		}
@@ -77,6 +86,10 @@ func (r *RESPParser) ReadNext() (RESPValue, error) {
 		}
 		break
 	case TypeBulkString:
+		defer func() {
+			check.That(res.IntValue == 0)
+			check.That(len(res.Array) == 0)
+		}()
 		lenAsStr, err := r.reader.ReadLine()
 		if err != nil {
 			return RESPValue{}, err
@@ -89,14 +102,24 @@ func (r *RESPParser) ReadNext() (RESPValue, error) {
 		if count < 0 {
 			return RESPValue{}, fmt.Errorf("len of bluk string is less then 0")
 		}
+		defer func() {
+			check.That(len(res.StringValue) == count)
+		}()
+
 		stringBytes := make([]byte, count)
-		n, err := r.reader.Read(stringBytes)
-		if err != nil {
-			return RESPValue{}, err
+		var totalN = 0
+		for totalN < len(stringBytes) {
+			n, err := r.reader.Read(stringBytes[totalN:])
+			if err != nil {
+				return RESPValue{}, err
+			}
+			totalN += n
 		}
-		if n < count {
+
+		if totalN < count {
 			return RESPValue{}, fmt.Errorf("did not as read as much as defined len of string")
 		}
+		check.That(totalN == count)
 
 		line, err := r.reader.ReadLine()
 		if err != nil {
@@ -108,6 +131,10 @@ func (r *RESPParser) ReadNext() (RESPValue, error) {
 		res.StringValue = string(stringBytes)
 		break
 	case TypeInteger:
+		defer func() {
+			check.That(len(res.StringValue) == 0)
+			check.That(len(res.Array) == 0)
+		}()
 		lineAsString, err := r.reader.ReadLine()
 		if err != nil {
 			return RESPValue{}, err
@@ -120,8 +147,11 @@ func (r *RESPParser) ReadNext() (RESPValue, error) {
 		break
 
 	case TypeSimpleString, TypeSimpleError:
+		defer func() {
+			check.That(res.IntValue == 0)
+			check.That(len(res.Array) == 0)
+		}()
 		line, err := r.reader.ReadLine()
-		fmt.Printf("reading line for %v, line: %s\n", rune(firstByte), line)
 		if err != nil {
 			return RESPValue{}, err
 		}

@@ -8,11 +8,6 @@ import (
 	"github.com/islombektoshev/RocksQL/check"
 )
 
-type FeedRes struct {
-	Status int
-	Cmds   []string
-}
-
 const (
 	ResStatusContinue = iota
 	ResStatusError

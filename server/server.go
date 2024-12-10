@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net"
 
+	"github.com/islombektoshev/RocksQL/engine"
 	"github.com/islombektoshev/RocksQL/resp"
 )
 
@@ -19,7 +20,7 @@ type Server struct {
 
 //go:generate mockery --with-expecter --name=Handler --output=mocks --outpkg=mocks
 type Handler interface {
-	ExecuteCmd(cmds []string) resp.RESPValue
+	ExecuteCmd(ctx engine.SessionContext, cmds []string) resp.RESPValue
 }
 
 func NewServer(handler Handler, address string) *Server {
@@ -48,7 +49,7 @@ func (s *Server) Addr() string {
 	}
 	return ""
 }
-func (s *Server) doAcceptSingle(conn net.Conn) {
+func (s *Server) handeConn(ctx engine.SessionContext, conn net.Conn) {
 	reader := resp.NewRESPReader(conn)
 	parser := resp.NewParser(reader)
 
@@ -78,7 +79,7 @@ readBlk:
 
 			goto respondeWithResult
 		}
-		result = s.handler.ExecuteCmd(cmds)
+		result = s.handler.ExecuteCmd(ctx, cmds)
 
 	respondeWithResult:
 		resByts, err := resp.SerializeRespValue(result)
@@ -128,7 +129,10 @@ func (s *Server) AcceptContinously(ctx context.Context, MAX_CONN int) {
 				<-semaphore
 			}()
 
-			s.doAcceptSingle(conn)
+			s.handeConn(engine.SessionContext{
+				Context: ctx,
+				Vars:    engine.NewSession(),
+			}, conn)
 		}()
 	}
 }

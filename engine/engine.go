@@ -6,7 +6,8 @@ type OpRes struct {
 
 type DataRes struct {
 	OpRes
-	Data []byte
+	Data   []byte
+	Exists bool
 }
 
 type Pair struct {
@@ -16,5 +17,7 @@ type Pair struct {
 type Engine interface {
 	Put([]byte, []byte) OpRes
 	Get([]byte) DataRes
+	Del([]byte) error
+	TxStart(SessionContext) (uint64, error)
 	Iter(starting []byte, limit int) ([]Pair, error)
 }

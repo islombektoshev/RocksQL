@@ -1,23 +1,29 @@
 package handles
 
 import (
+	"fmt"
 	"strconv"
 
-	"fmt"
 	"github.com/islombektoshev/RocksQL/engine"
 	"github.com/islombektoshev/RocksQL/resp"
 )
 
-func PUT(eng engine.Engine, cmds []string) resp.RESPValue {
-	if len(cmds) != 3 {
+type CmdCtx struct {
+	Ctx    engine.SessionContext
+	Engine engine.Engine
+	Cmds   []string
+}
+
+func PUT(c CmdCtx) resp.RESPValue {
+	if len(c.Cmds) != 3 {
 		return resp.RESPValue{
 			Type:        resp.TypeSimpleError,
 			StringValue: "Wrong format PUT. Example: `PUT 1 value`",
 		}
 	}
-	var key = cmds[1]
-	var val = cmds[2]
-	var res = eng.Put([]byte(key), []byte(val))
+	var key = c.Cmds[1]
+	var val = c.Cmds[2]
+	var res = c.Engine.Put([]byte(key), []byte(val))
 	if res.Err != nil {
 		return resp.RESPValue{
 			Type:        resp.TypeSimpleError,
@@ -31,15 +37,15 @@ func PUT(eng engine.Engine, cmds []string) resp.RESPValue {
 	}
 }
 
-func GET(eng engine.Engine, cmds []string) resp.RESPValue {
-	if len(cmds) != 2 {
+func GET(c CmdCtx) resp.RESPValue {
+	if len(c.Cmds) != 2 {
 		return resp.RESPValue{
 			Type:        resp.TypeSimpleError,
 			StringValue: "Wrong format GET. Example: `GET 1`",
 		}
 	}
-	var key = cmds[1]
-	var res = eng.Get([]byte(key))
+	var key = c.Cmds[1]
+	var res = c.Engine.Get([]byte(key))
 	if res.Err != nil {
 		return resp.RESPValue{
 			Type:        resp.TypeSimpleError,
@@ -52,14 +58,14 @@ func GET(eng engine.Engine, cmds []string) resp.RESPValue {
 	}
 }
 
-func ITER(eng engine.Engine, cmds []string) resp.RESPValue {
-	if len(cmds) > 3 || len(cmds) < 2 {
+func ITER(c CmdCtx) resp.RESPValue {
+	if len(c.Cmds) > 3 || len(c.Cmds) < 2 {
 		return resp.RESPValue{
 			Type:        resp.TypeSimpleError,
 			StringValue: "Wrong format ITER. Example: `ITER count [start]`",
 		}
 	}
-	var limit, err = strconv.Atoi(cmds[1])
+	var limit, err = strconv.Atoi(c.Cmds[1])
 	if err != nil {
 		return resp.RESPValue{
 			Type:        resp.TypeSimpleError,
@@ -67,10 +73,10 @@ func ITER(eng engine.Engine, cmds []string) resp.RESPValue {
 		}
 	}
 	var startingKey []byte = nil
-	if len(cmds) > 2 {
-		startingKey = []byte(cmds[2])
+	if len(c.Cmds) > 2 {
+		startingKey = []byte(c.Cmds[2])
 	}
-	pairs, err := eng.Iter(startingKey, limit)
+	pairs, err := c.Engine.Iter(startingKey, limit)
 	if err != nil {
 		return resp.RESPValue{
 			Type:        resp.TypeSimpleError,
@@ -85,6 +91,74 @@ func ITER(eng engine.Engine, cmds []string) resp.RESPValue {
 		res.Array = append(res.Array, resp.RESPValue{Type: resp.TypeBulkString, StringValue: string(p.Val)})
 	}
 	return res
+
+}
+
+func DEL(c CmdCtx) resp.RESPValue {
+	if len(c.Cmds) != 2 {
+		return resp.RESPValue{
+			Type:        resp.TypeSimpleError,
+			StringValue: "Wrong format DEL. Example: `DEL 1`",
+		}
+	}
+	var key = c.Cmds[1]
+	var err = c.Engine.Del([]byte(key))
+	if err != nil {
+		return resp.RESPValue{
+			Type:        resp.TypeSimpleError,
+			StringValue: fmt.Sprintf("Error occurding during DEL: %+v", err),
+		}
+	}
+	return resp.RESPValue{
+		Type:        resp.TypeSimpleString,
+		StringValue: "ok",
+	}
+}
+
+func EXISTS(c CmdCtx) resp.RESPValue {
+	if len(c.Cmds) != 2 {
+		return resp.RESPValue{
+			Type:        resp.TypeSimpleError,
+			StringValue: "Wrong format EXISTS. Example: `EXISTS 1`",
+		}
+	}
+	var key = c.Cmds[1]
+	var res = c.Engine.Get([]byte(key))
+	if res.Err != nil {
+		return resp.RESPValue{
+			Type:        resp.TypeSimpleError,
+			StringValue: fmt.Errorf("Error occurding during EXISTS: %+v", res.Err).Error(),
+		}
+	}
+	int := 0
+	if res.Exists {
+		int = 1
+	}
+	return resp.RESPValue{
+		Type:     resp.TypeInteger,
+		IntValue: int,
+	}
+}
+
+func TX_START(c CmdCtx) resp.RESPValue {
+	if len(c.Cmds) != 1 {
+		return resp.RESPValue{
+			Type:        resp.TypeSimpleError,
+			StringValue: "TxStart do not expect argument",
+		}
+	}
+	index, err := c.Engine.TxStart(c.Ctx)
+	if err != nil {
+		return resp.RESPValue{
+			Type:        resp.TypeSimpleError,
+			StringValue: "Tx Start Error: " + err.Error(),
+		}
+	}
+
+	return resp.RESPValue{
+		Type:        resp.TypeBulkString,
+		StringValue: strconv.FormatUint(index, 10),
+	}
 
 }
 

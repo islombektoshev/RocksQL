@@ -11,6 +11,7 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/islombektoshev/RocksQL/cmd_router"
 	"github.com/islombektoshev/RocksQL/engine"
 	"github.com/islombektoshev/RocksQL/server"
 )
@@ -84,7 +85,7 @@ func MakeTerminateChann() chan os.Signal {
 }
 
 func StartServer(ctx context.Context, eng engine.Engine, numOfConn int, wg *sync.WaitGroup) {
-	svr := server.NewServer(&CmdRouter{Engine: eng}, fmt.Sprintf("%s:%d", host, port))
+	svr := server.NewServer(&cmd_router.CmdRouter{Engine: eng}, fmt.Sprintf("%s:%d", host, port))
 	err := svr.StartListening()
 	if err != nil {
 		slog.Error("Unable to listern port", "port", port, "error", err)

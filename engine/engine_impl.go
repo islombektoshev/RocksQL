@@ -1,13 +1,16 @@
 package engine
 
-import "github.com/linxGnu/grocksdb"
+import (
+	"fmt"
+	"github.com/linxGnu/grocksdb"
+)
 
 type Impl struct {
-	DBContext
+	EngineContext
 }
 
-func NewEngine(db DBContext) Engine {
-	return &Impl{DBContext: db}
+func NewEngine(db EngineContext) Engine {
+	return &Impl{EngineContext: db}
 }
 
 func (i *Impl) Put(key []byte, val []byte) OpRes {
@@ -26,13 +29,13 @@ func (i *Impl) Get(key []byte) DataRes {
 	var rdOpt = grocksdb.NewDefaultReadOptions()
 	slice, err := i.DB.Get(rdOpt, key)
 	if err != nil {
-		return DataRes{OpRes{Err: err}, nil}
+		return DataRes{OpRes{Err: err}, nil, false}
 	}
 	defer slice.Free()
 	var bytes = slice.Data()
 	var res = make([]byte, len(bytes))
 	copy(res, bytes)
-	return DataRes{OpRes{Err: nil}, res}
+	return DataRes{OpRes{Err: nil}, res, slice.Exists()}
 }
 
 func (i *Impl) Iter(starting []byte, limit int) ([]Pair, error) {
@@ -61,4 +64,35 @@ func (i *Impl) Iter(starting []byte, limit int) ([]Pair, error) {
 		idx++
 	}
 	return res, nil
+}
+
+func (i *Impl) Del(key []byte) error {
+	wrOpt := grocksdb.NewDefaultWriteOptions()
+	defer wrOpt.Destroy()
+	return i.DB.Delete(wrOpt, key)
+}
+
+func (i *Impl) TxStart(ctx SessionContext) (uint64, error) {
+	var parenTx *grocksdb.Transaction
+	if ctx.Vars.ParenTx > 0 {
+		parenTx = ctx.TxList[ctx.Vars.ParenTx].Tx
+		if parenTx == nil {
+			return 0, fmt.Errorf("Parent Tx not found")
+		}
+	}
+	wrtOpt := grocksdb.NewDefaultWriteOptions()
+	defer wrtOpt.Destroy()
+	txOpt := grocksdb.NewDefaultTransactionOptions()
+	defer txOpt.Destroy()
+
+	tx := i.DB.TransactionBegin(wrtOpt, txOpt, parenTx)
+	index := i.NextInt()
+	txHoldr := TxHolder{
+		Tx:    tx,
+		Index: index,
+	}
+
+	ctx.TxList[index] = txHoldr
+	i.TxList[index] = txHoldr
+	return index, nil
 }

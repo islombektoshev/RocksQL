@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/islombektoshev/RocksQL/check"
+	"github.com/islombektoshev/RocksQL/engine"
 	"github.com/islombektoshev/RocksQL/resp"
 	"github.com/islombektoshev/RocksQL/server"
 	"github.com/islombektoshev/RocksQL/server/mocks"
@@ -80,8 +81,8 @@ func TestSeverTest_RandomCommands(t *testing.T) {
 	var lastCmd *resp.RESPValue
 	var lastResp resp.RESPValue
 	var responseId = 0
-	handler.EXPECT().ExecuteCmd(mock.Anything).
-		RunAndReturn(func(cmds []string) resp.RESPValue {
+	handler.EXPECT().ExecuteCmd(mock.Anything, mock.Anything).
+		RunAndReturn(func(ctx engine.SessionContext, cmds []string) resp.RESPValue {
 			slog.Info("Server: Receiving command")
 			require.Equal(t, len(lastCmd.Array), len(cmds))
 			for i, cmd := range cmds {
